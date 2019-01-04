@@ -1,7 +1,8 @@
 /// \author James Hughes
 /// \date   November 2013
 
-#include <glm-aabb/AABB.hpp>
+#include "../glm-aabb/AABB.hpp"
+
 #include <gtest/gtest.h>
 
 namespace {
@@ -16,20 +17,20 @@ namespace {
 
 TEST(AABB, Constructors)
 {
-  CPM_AABB_NS::AABB aabbNull;
+  AABB aabbNull;
   EXPECT_EQ(true, aabbNull.isNull());
 
-  CPM_AABB_NS::AABB aabbSphere(glm::vec3(3.0), 1.0);
+  AABB aabbSphere(glm::vec3(3.0), 1.0);
   EXPECT_EQ(false, aabbSphere.isNull());
   vec3Test(glm::vec3(2.0, 2.0, 2.0), aabbSphere.getMin());
   vec3Test(glm::vec3(4.0, 4.0, 4.0), aabbSphere.getMax());
 
-  CPM_AABB_NS::AABB aabbMinMax(glm::vec3(0.0), glm::vec3(-1.0, 1.0, 3.0));
+  AABB aabbMinMax(glm::vec3(0.0), glm::vec3(-1.0, 1.0, 3.0));
   EXPECT_EQ(false, aabbMinMax.isNull());
   vec3Test(glm::vec3(-1.0, 0.0, 0.0), aabbMinMax.getMin());
   vec3Test(glm::vec3( 0.0, 1.0, 3.0), aabbMinMax.getMax());
 
-  CPM_AABB_NS::AABB aabbCopy(aabbSphere);
+  AABB aabbCopy(aabbSphere);
   EXPECT_EQ(false, aabbCopy.isNull());
   vec3Test(glm::vec3(2.0, 2.0, 2.0), aabbCopy.getMin());
   vec3Test(glm::vec3(4.0, 4.0, 4.0), aabbCopy.getMax());
@@ -37,13 +38,13 @@ TEST(AABB, Constructors)
 
 TEST(AABB, MakeNonNull)
 {
-  CPM_AABB_NS::AABB aabb;  
-  CPM_AABB_NS::AABB temp;  
+  AABB aabb;
+  AABB temp;
 
   EXPECT_EQ(true, aabb.isNull());
 
   // Function to check to make sure aabb is NOT null, then set it to NULL.
-  auto checkSetAABBNull = [](CPM_AABB_NS::AABB& check)
+  auto checkSetAABBNull = [](AABB& check)
   {
     EXPECT_EQ(false, check.isNull());
     check.setNull();
@@ -79,7 +80,7 @@ TEST(AABB, MakeNonNull)
 
 TEST(AABB, ExtendNumericTests)
 {
-  CPM_AABB_NS::AABB aabb;
+  AABB aabb;
 
   vec3Test(glm::vec3(0.0), aabb.getDiagonal());
 
@@ -142,51 +143,51 @@ TEST(AABB, ExtendNumericTests)
 
 TEST(AABB, Itersect)
 {
-  CPM_AABB_NS::AABB bb1;
+  AABB bb1;
   bb1.extend(glm::vec3(1.0));
   bb1.extend(1.0);
   vec3Test(glm::vec3(0.0, 0.0, 0.0), bb1.getMin());
   vec3Test(glm::vec3(2.0, 2.0, 2.0), bb1.getMax());
 
-  CPM_AABB_NS::AABB bb2;
+  AABB bb2;
   bb2.extend(glm::vec3(5.0));
   bb2.extend(1.0);
   vec3Test(glm::vec3(4.0, 4.0, 4.0), bb2.getMin());
   vec3Test(glm::vec3(6.0, 6.0, 6.0), bb2.getMax());
 
-  CPM_AABB_NS::AABB bb3;
+  AABB bb3;
   bb3.extend(glm::vec3(1.0, 1.0, 1.0));
   bb3.extend(glm::vec3(5.0, 5.0, 5.0));
   vec3Test(glm::vec3(1.0, 1.0, 1.0), bb3.getMin());
   vec3Test(glm::vec3(5.0, 5.0, 5.0), bb3.getMax());
 
-  EXPECT_EQ(CPM_AABB_NS::AABB::OUTSIDE, bb1.intersect(bb2));
-  EXPECT_EQ(CPM_AABB_NS::AABB::INTERSECT, bb1.intersect(bb3));
-  EXPECT_EQ(CPM_AABB_NS::AABB::INTERSECT, bb2.intersect(bb3));
+  EXPECT_EQ(AABB::OUTSIDE, bb1.intersect(bb2));
+  EXPECT_EQ(AABB::INTERSECT, bb1.intersect(bb3));
+  EXPECT_EQ(AABB::INTERSECT, bb2.intersect(bb3));
 
-  EXPECT_EQ(CPM_AABB_NS::AABB::INSIDE, bb1.intersect(bb1));
-  EXPECT_EQ(CPM_AABB_NS::AABB::INSIDE, bb2.intersect(bb2));
-  EXPECT_EQ(CPM_AABB_NS::AABB::INSIDE, bb3.intersect(bb3));
+  EXPECT_EQ(AABB::INSIDE, bb1.intersect(bb1));
+  EXPECT_EQ(AABB::INSIDE, bb2.intersect(bb2));
+  EXPECT_EQ(AABB::INSIDE, bb3.intersect(bb3));
 
-  CPM_AABB_NS::AABB bb1_inside(glm::vec3(0.5), glm::vec3(1.5));
-  EXPECT_EQ(CPM_AABB_NS::AABB::INSIDE, bb1.intersect(bb1_inside));
-  EXPECT_EQ(CPM_AABB_NS::AABB::OUTSIDE, bb2.intersect(bb1_inside));
-  EXPECT_EQ(CPM_AABB_NS::AABB::INTERSECT, bb3.intersect(bb1_inside));
+  AABB bb1_inside(glm::vec3(0.5), glm::vec3(1.5));
+  EXPECT_EQ(AABB::INSIDE, bb1.intersect(bb1_inside));
+  EXPECT_EQ(AABB::OUTSIDE, bb2.intersect(bb1_inside));
+  EXPECT_EQ(AABB::INTERSECT, bb3.intersect(bb1_inside));
 
-  CPM_AABB_NS::AABB bb2_inside(glm::vec3(4.5), glm::vec3(5.5));
-  EXPECT_EQ(CPM_AABB_NS::AABB::OUTSIDE, bb1.intersect(bb2_inside));
-  EXPECT_EQ(CPM_AABB_NS::AABB::INSIDE, bb2.intersect(bb2_inside));
-  EXPECT_EQ(CPM_AABB_NS::AABB::INTERSECT, bb3.intersect(bb2_inside));
+  AABB bb2_inside(glm::vec3(4.5), glm::vec3(5.5));
+  EXPECT_EQ(AABB::OUTSIDE, bb1.intersect(bb2_inside));
+  EXPECT_EQ(AABB::INSIDE, bb2.intersect(bb2_inside));
+  EXPECT_EQ(AABB::INTERSECT, bb3.intersect(bb2_inside));
 
-  CPM_AABB_NS::AABB bb3_inside1(glm::vec3(1.5), glm::vec3(4.5));
-  EXPECT_EQ(CPM_AABB_NS::AABB::INTERSECT, bb1.intersect(bb3_inside1));
-  EXPECT_EQ(CPM_AABB_NS::AABB::INTERSECT, bb2.intersect(bb3_inside1));
-  EXPECT_EQ(CPM_AABB_NS::AABB::INSIDE, bb3.intersect(bb3_inside1));
+  AABB bb3_inside1(glm::vec3(1.5), glm::vec3(4.5));
+  EXPECT_EQ(AABB::INTERSECT, bb1.intersect(bb3_inside1));
+  EXPECT_EQ(AABB::INTERSECT, bb2.intersect(bb3_inside1));
+  EXPECT_EQ(AABB::INSIDE, bb3.intersect(bb3_inside1));
 
-  CPM_AABB_NS::AABB bb3_inside2(glm::vec3(2.5), glm::vec3(3.5));
-  EXPECT_EQ(CPM_AABB_NS::AABB::OUTSIDE, bb1.intersect(bb3_inside2));
-  EXPECT_EQ(CPM_AABB_NS::AABB::OUTSIDE, bb2.intersect(bb3_inside2));
-  EXPECT_EQ(CPM_AABB_NS::AABB::INSIDE, bb3.intersect(bb3_inside2));
+  AABB bb3_inside2(glm::vec3(2.5), glm::vec3(3.5));
+  EXPECT_EQ(AABB::OUTSIDE, bb1.intersect(bb3_inside2));
+  EXPECT_EQ(AABB::OUTSIDE, bb2.intersect(bb3_inside2));
+  EXPECT_EQ(AABB::INSIDE, bb3.intersect(bb3_inside2));
 }
 
 }
